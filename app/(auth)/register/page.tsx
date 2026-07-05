@@ -11,10 +11,44 @@ export default function RegisterPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    router.push('/login');
+    setError('');
+
+    if (password.length < 6) {
+      setError('密码至少需要 6 位');
+      return;
+    }
+
+    if (!code.trim()) {
+      setError('请输入邀请码');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, code }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || '注册失败');
+      } else {
+        router.push('/login');
+      }
+    } catch {
+      setError('网络错误，请重试');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,8 +97,9 @@ export default function RegisterPage() {
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
-        <Button type="submit" variant="primary" size="full">
-          创建账号
+        {error && <p className="auth-error">{error}</p>}
+        <Button type="submit" variant="primary" size="full" disabled={loading}>
+          {loading ? '创建中...' : '创建账号'}
         </Button>
       </form>
       <div className="auth-footer">

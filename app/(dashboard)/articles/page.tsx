@@ -1,14 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from '@/components/ui/SearchBar';
 import ArticleGrid from '@/components/articles/ArticleGrid';
-import { mockArticles } from '@/lib/mock-data';
+import type { Article } from '@/lib/types';
 
 export default function ArticlesPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredArticles = mockArticles.filter(
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/articles');
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || '获取文章失败');
+        }
+        const data = await res.json();
+        setArticles(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '获取文章失败');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
+
+  const filteredArticles = articles.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -31,7 +55,13 @@ export default function ArticlesPage() {
         </div>
       </div>
       <div className="page-body">
-        <ArticleGrid articles={filteredArticles} />
+        {loading ? (
+          <p>加载中...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : (
+          <ArticleGrid articles={filteredArticles} />
+        )}
       </div>
     </>
   );

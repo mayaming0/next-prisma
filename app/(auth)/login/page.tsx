@@ -3,17 +3,39 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
+import { signIn } from 'next-auth/react';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    router.push('/articles');
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = await signIn('credentials', {
+        username,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError('用户名或密码错误');
+      } else {
+        router.push('/articles');
+      }
+    } catch {
+      setError('登录失败，请重试');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,8 +75,9 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" variant="primary" size="full">
-          登录
+        {error && <p className="auth-error">{error}</p>}
+        <Button type="submit" variant="primary" size="full" disabled={loading}>
+          {loading ? '登录中...' : '登录'}
         </Button>
       </form>
       <div className="auth-footer">

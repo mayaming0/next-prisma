@@ -456,6 +456,12 @@ a:hover {
   color: var(--secondary-solid);
 }
 
+.auth-error {
+  color: var(--destructive-solid);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
 /* ============================================
    Form Elements
    ============================================ */

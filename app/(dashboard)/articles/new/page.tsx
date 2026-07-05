@@ -1,15 +1,35 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownEditor from '@/components/editor/MarkdownEditor';
 
 export default function NewArticlePage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (title: string, content: string, tags: string[]) => {
-    console.log('发布文章:', { title, content, tags });
-    router.push('/articles');
+  const handleSubmit = async (title: string, content: string, tags: string[]) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, tags }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || '发布失败');
+        return;
+      }
+      router.push('/articles');
+    } catch {
+      setError('网络错误');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,6 +54,8 @@ export default function NewArticlePage() {
       </div>
       <div className="page-body">
         <MarkdownEditor mode="create" onSubmit={handleSubmit} />
+        {error && <p style={{ color: 'var(--destructive-solid)', marginTop: '12px' }}>{error}</p>}
+        {loading && <p style={{ marginTop: '12px' }}>发布中...</p>}
       </div>
     </>
   );

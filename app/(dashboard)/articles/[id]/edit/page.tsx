@@ -1,11 +1,9 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import MarkdownEditor from '@/components/editor/MarkdownEditor';
-import { getArticleById } from '@/lib/mock-data';
 
 interface EditArticlePageProps {
   params: Promise<{ id: string }>;
@@ -14,19 +12,69 @@ interface EditArticlePageProps {
 export default function EditArticlePage({ params }: EditArticlePageProps) {
   const { id } = use(params);
   const router = useRouter();
-  const article = getArticleById(id);
+  const [article, setArticle] = useState<{
+    title: string;
+    content: string;
+    tags: string[];
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [notFoundArticle, setNotFoundArticle] = useState(false);
 
-  if (!article) {
-    notFound();
-  }
+  useEffect(() => {
+    const fetchArticle = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch(`/api/articles/${id}`);
+        if (res.status === 404) {
+          setNotFoundArticle(true);
+          return;
+        }
+        if (!res.ok) {
+          const data = await res.json();
+          setError(data.error || '加载失败');
+          return;
+        }
+        const data = await res.json();
+        setArticle({
+          title: data.title ?? '',
+          content: data.content ?? '',
+          tags: data.tags ?? [],
+        });
+      } catch {
+        setError('网络错误');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArticle();
+  }, [id]);
 
   const handleCancel = () => {
     router.push(`/articles/${id}`);
   };
 
-  const handleSubmit = (title: string, content: string, tags: string[]) => {
-    console.log('更新文章:', { id, title, content, tags });
-    router.push(`/articles/${id}`);
+  const handleSubmit = async (title: string, content: string, tags: string[]) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/articles/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, tags }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || '更新失败');
+        return;
+      }
+      router.push(`/articles/${id}`);
+    } catch {
+      setError('网络错误');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,14 +98,25 @@ export default function EditArticlePage({ params }: EditArticlePageProps) {
         <p className="page-desc">修改文章内容后点击更新</p>
       </div>
       <div className="page-body">
-        <MarkdownEditor
-          mode="edit"
-          initialTitle={article.title}
-          initialContent={article.content}
-          initialTags={article.tags}
-          onCancel={handleCancel}
-          onSubmit={handleSubmit}
-        />
+        {loading && article === null && !notFoundArticle ? (
+          <p>加载中...</p>
+        ) : notFoundArticle ? (
+          <p>文章不存在</p>
+        ) : article ? (
+          <>
+            <MarkdownEditor
+              mode="edit"
+              initialTitle={article.title}
+              initialContent={article.content}
+              initialTags={article.tags}
+              onCancel={handleCancel}
+              onSubmit={handleSubmit}
+            />
+            {error && <p style={{ color: 'var(--destructive-solid)', marginTop: '12px' }}>{error}</p>}
+          </>
+        ) : (
+          <p style={{ color: 'var(--destructive-solid)' }}>{error}</p>
+        )}
       </div>
     </>
   );

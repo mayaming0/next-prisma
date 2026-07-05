@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 const navItems = [
   {
     section: '内容',
+    adminOnly: false,
     links: [
       {
         href: '/articles',
@@ -85,6 +86,9 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const isAdmin = session?.user?.role === 'ADMIN';
 
   const isActive = (href: string) => {
     if (href === '/articles') {
@@ -94,6 +98,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const handleLogout = () => {
+    signOut({ redirect: false });
     router.push('/login');
   };
 
@@ -110,33 +115,39 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         <nav className="sidebar-nav">
-          {navItems.map((section) => (
-            <div
-              key={section.section}
-              className={`sidebar-section ${section.adminOnly ? 'admin-only' : ''}`}
-            >
-              <div className="sidebar-section-label">{section.section}</div>
-              {section.links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`sidebar-link ${isActive(link.href) ? 'active' : ''}`}
-                  onClick={onClose}
-                >
-                  {link.icon}
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          ))}
+          {navItems.map((section) => {
+            if (section.adminOnly && !isAdmin) return null;
+
+            return (
+              <div
+                key={section.section}
+                className={`sidebar-section ${section.adminOnly ? 'admin-only' : ''}`}
+              >
+                <div className="sidebar-section-label">{section.section}</div>
+                {section.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`sidebar-link ${isActive(link.href) ? 'active' : ''}`}
+                    onClick={onClose}
+                  >
+                    {link.icon}
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            );
+          })}
         </nav>
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="sidebar-avatar">A</div>
+            <div className="sidebar-avatar">
+              {session?.user?.username?.charAt(0).toUpperCase() || '?'}
+            </div>
             <div className="sidebar-user-info">
-              <div className="user-name">Admin</div>
-              <div className="user-role">管理员</div>
+              <div className="user-name">{session?.user?.username || '未登录'}</div>
+              <div className="user-role">{isAdmin ? '管理员' : '用户'}</div>
             </div>
           </div>
           <button

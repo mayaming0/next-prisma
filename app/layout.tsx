@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Providers from "@/components/providers/Providers";
 
 export const metadata: Metadata = {
   title: "Golden Blog - Full-Stack Learning Journal",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="is-admin">{children}</body>
+      <body className="is-admin">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
