@@ -22,6 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.role = (user as { role?: string }).role;
         token.id = user.id;
+        token.username = (user as { username?: string }).username;
       }
       return token;
     },
@@ -29,6 +30,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as 'ADMIN' | 'USER';
+        session.user.username = token.username as string;
       }
       return session;
     },

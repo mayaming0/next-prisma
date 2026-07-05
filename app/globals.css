@@ -1179,7 +1179,7 @@ textarea.form-input {
   border-bottom: none;
 }
 
-.toolbar-hint {
+.toolbar-btn {
   font-family: var(--font-inter), var(--font-ui);
   font-size: 0.6875rem;
   color: var(--fg-muted);
@@ -1187,6 +1187,19 @@ textarea.form-input {
   background: var(--card-solid);
   border-radius: calc(var(--radius) * 0.2);
   border: 1px solid var(--border-solid);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+}
+
+.toolbar-btn:hover {
+  color: var(--fg-solid);
+  background: var(--accent-solid);
+  border-color: var(--accent-solid);
+}
+
+.toolbar-btn:active {
+  transform: scale(0.95);
 }
 
 .editor-title-input {

@@ -1,31 +1,41 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import ArticleCard from './ArticleCard';
-import type { Article } from '@/lib/types';
+import { useState, useEffect } from "react";
+import ArticleCard from "./ArticleCard";
+import type { Article } from "@/lib/types";
 
 interface ArticleGridProps {
-  articles: Article[];
-  isAdmin?: boolean;
+	articles: Article[];
+	isAdmin?: boolean;
+	onDelete?: (id: string) => void;
 }
 
-export default function ArticleGrid({ articles, isAdmin = true }: ArticleGridProps) {
-  const [articleList, setArticleList] = useState(articles);
+export default function ArticleGrid({
+	articles,
+	isAdmin = true,
+	onDelete,
+}: ArticleGridProps) {
+	const [articleList, setArticleList] = useState(articles);
 
-  const handleDelete = (id: string) => {
-    setArticleList((prev) => prev.filter((a) => a.id !== id));
-  };
+	useEffect(() => {
+		setArticleList(articles);
+	}, [articles]);
 
-  return (
-    <div className="articles-grid">
-      {articleList.map((article) => (
-        <ArticleCard
-          key={article.id}
-          article={article}
-          isAdmin={isAdmin}
-          onDelete={handleDelete}
-        />
-      ))}
-    </div>
-  );
+	const handleDelete = async (id: string) => {
+		if (!onDelete) return;
+		onDelete(id);
+	};
+
+	return (
+		<div className="articles-grid">
+			{articleList.map((article) => (
+				<ArticleCard
+					key={article.id}
+					article={article}
+					isAdmin={isAdmin}
+					onDelete={handleDelete}
+				/>
+			))}
+		</div>
+	);
 }
