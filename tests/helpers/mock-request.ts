@@ -10,7 +10,7 @@ export function createRequest(
 ): NextRequest {
   const { method = 'GET', body, headers = {} } = options;
 
-  const init: RequestInit = {
+  const init: Omit<RequestInit, 'signal'> = {
     method,
     headers: {
       'Content-Type': 'application/json',
