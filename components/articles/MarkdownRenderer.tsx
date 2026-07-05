@@ -22,10 +22,10 @@ export default function MarkdownRenderer({
 }: MarkdownRendererProps) {
   const components = addHeadingIds
     ? {
-        h2: ({ children }: { children: React.ReactNode }) => {
+        h2: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => {
           const text = String(children);
           const id = `section-${slugify(text)}`;
-          return <h2 id={id}>{children}</h2>;
+          return <h2 id={id} {...props}>{children}</h2>;
         },
       }
     : undefined;
