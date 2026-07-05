@@ -2,6 +2,8 @@
 
 一个基于 Next.js + Prisma 的全栈博客系统，用于学习笔记和技术分享。
 
+已部署在 vercel，点击可查看 [goldenblog](https://goldenblog-lv4yodkfl-2461052556-5765s-projects.vercel.app/articles)。
+
 ## ✨ 功能特性
 
 ### 核心功能
@@ -227,11 +229,11 @@ npm run test:run -- articles.test.ts
 
 1. 注册 [Neon](https://neon.tech) 账号
 2. 创建新项目：
-   - Project name: `golden-blog`
-   - Region: 选择离你最近的区域（推荐 `Southeast Asia (Singapore)`）
-   - Database name: `neondb`
+    - Project name: `golden-blog`
+    - Region: 选择离你最近的区域（推荐 `Southeast Asia (Singapore)`）
+    - Database name: `neondb`
 3. 获取连接串：进入 Dashboard → Copy connection string
-   > ⚠️ Neon 连接串默认带 `?sslmode=require`，必须保留
+    > ⚠️ Neon 连接串默认带 `?sslmode=require`，必须保留
 
 #### 第二步：配置 Vercel
 
@@ -240,12 +242,12 @@ npm run test:run -- articles.test.ts
 3. 点击 **New Project** → Import 你的 GitHub 仓库
 4. 在 **Environment Variables** 中添加以下变量：
 
-   | 变量名            | 说明                     | 示例值                                                     |
-   | ----------------- | ------------------------ | ---------------------------------------------------------- |
-   | `DATABASE_URL`    | Neon 数据库连接串        | `postgresql://user:pass@host/db?sslmode=require`           |
-   | `NEXTAUTH_SECRET` | NextAuth 签名密钥        | `openssl rand -base64 32` 生成的随机字符串                |
-   | `NEXTAUTH_URL`    | 应用 URL（部署后自动填充） | `https://your-project.vercel.app`                          |
-   | `INVITATION_CODE` | 注册邀请码               | 自定义，如 `F2Z4Q6`                                        |
+    | 变量名            | 说明                       | 示例值                                           |
+    | ----------------- | -------------------------- | ------------------------------------------------ |
+    | `DATABASE_URL`    | Neon 数据库连接串          | `postgresql://user:pass@host/db?sslmode=require` |
+    | `NEXTAUTH_SECRET` | NextAuth 签名密钥          | `openssl rand -base64 32` 生成的随机字符串       |
+    | `NEXTAUTH_URL`    | 应用 URL（部署后自动填充） | `https://your-project.vercel.app`                |
+    | `INVITATION_CODE` | 注册邀请码                 | 自定义，如 `F2Z4Q6`                              |
 
 5. 点击 **Deploy** 开始部署
 
@@ -297,12 +299,12 @@ INVITATION_CODE="your-invitation-code"
 
 ### 部署平台对比
 
-| 平台        | 优势                     | 适用场景         |
-| ----------- | ------------------------ | ---------------- |
-| Vercel      | 一键部署、自动扩展       | 个人/小型项目     |
-| Railway     | 数据库集成、一键全栈部署 | 快速原型         |
-| AWS EC2/ECS | 完全可控、灵活配置       | 中大型项目       |
-| Docker      | 环境一致、易于迁移       | 企业级部署       |
+| 平台        | 优势                     | 适用场景      |
+| ----------- | ------------------------ | ------------- |
+| Vercel      | 一键部署、自动扩展       | 个人/小型项目 |
+| Railway     | 数据库集成、一键全栈部署 | 快速原型      |
+| AWS EC2/ECS | 完全可控、灵活配置       | 中大型项目    |
+| Docker      | 环境一致、易于迁移       | 企业级部署    |
 
 ## 📄 许可证
 
