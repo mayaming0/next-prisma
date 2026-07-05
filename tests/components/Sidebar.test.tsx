@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Sidebar from '@/components/layout/Sidebar';
 
 const mockPush = vi.fn();
 
 vi.mock('next-auth/react', () => ({
   useSession: vi.fn(),
-  signOut: vi.fn(),
+  signOut: vi.fn(() => Promise.resolve()),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -52,7 +52,7 @@ describe('Sidebar 侧边栏', () => {
     expect(screen.queryByText('用户管理')).toBeNull();
   });
 
-  it('点击「退出登录」→ 调用 signOut({ redirect: false }) 并跳转 /login', () => {
+  it('点击「退出登录」→ 调用 signOut({ redirect: false }) 并跳转 /login', async () => {
     vi.mocked(useSession).mockReturnValue({
       data: {
         user: { id: '1', username: 'admin', role: 'ADMIN' },
@@ -65,7 +65,9 @@ describe('Sidebar 侧边栏', () => {
     const logoutButton = screen.getByText('退出登录');
     fireEvent.click(logoutButton);
 
-    expect(signOut).toHaveBeenCalledWith({ redirect: false });
-    expect(mockPush).toHaveBeenCalledWith('/login');
+    await waitFor(() => {
+      expect(signOut).toHaveBeenCalledWith({ redirect: false });
+      expect(mockPush).toHaveBeenCalledWith('/login');
+    });
   });
 });

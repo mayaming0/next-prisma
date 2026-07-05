@@ -3,6 +3,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import ArticlesPage from '@/app/(dashboard)/articles/page';
 
+vi.mock('next-auth/react', () => ({
+  useSession: vi.fn(() => ({
+    data: {
+      user: { id: '1', username: 'admin', role: 'ADMIN' },
+    },
+    status: 'authenticated',
+  })),
+}));
+
 const mockArticles = [
   {
     id: '1',
