@@ -4,6 +4,9 @@
 
 已部署在 vercel，点击可查看 [goldenblog](https://goldenblog-lv4yodkfl-2461052556-5765s-projects.vercel.app/articles)。
 
+![alt text](image.png)
+![alt text](image-1.png)
+
 ## ✨ 功能特性
 
 ### 核心功能
