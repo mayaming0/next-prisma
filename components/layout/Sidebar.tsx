@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import Pageviews from "./pageviews";
 
 const navItems = [
 	{
@@ -115,6 +116,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 				<div className="sidebar-brand">
 					<h2>Golden Blog</h2>
 					<div className="brand-sub">Maked By ZeQiang Fu</div>
+					{/* <Pageviews></Pageviews> */}
 				</div>
 
 				<nav className="sidebar-nav">
